@@ -6,7 +6,9 @@
 // window.chrome.webview. Reader tabs call window.Pagewise.* (see desk/platform.js).
 
 (() => {
-  const host = window.chrome?.webview;
+  // Windows: Edge WebView2. Linux: the same interface from linux/preload.js.
+  const host = window.chrome?.webview || window.pagewiseHost;
+  const isLinux = host?.platform === "linux";
   // PDFs are read and saved through this address (handled by MainForm.cs).
   const FILES = "https://files.pagewise.example";
   const $ = (id) => document.getElementById(id);
@@ -387,6 +389,9 @@
     } catch {}
   }
 
+  if (isLinux) {
+    $("associateButton").textContent = "Make Pagewise the default app for PDF files";
+  }
   $("associateButton").addEventListener("click", () => send({ type: "associate" }));
 
   // ------------------------------------------------------------ menu & dialog
@@ -453,6 +458,21 @@
 
   window.Pagewise = {
     isDark,
+    // Read aloud for the reader tabs (ui/enhance.js: speak(parts, onDone),
+    // cancel()). Linux speaks through speech-dispatcher; on Windows this is
+    // undefined and the reader uses Edge's own voices.
+    speech: host?.speak
+      ? {
+          speak(parts, onDone) {
+            host.speak(parts, navigator.language).then((finished) => {
+              if (finished) onDone?.();
+            });
+          },
+          cancel() {
+            host.cancelSpeech();
+          },
+        }
+      : undefined,
     key: (e) => handleKey(e),
     openDialog: () => send({ type: "open-dialog" }),
     openDropped,

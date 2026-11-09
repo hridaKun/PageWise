@@ -21,7 +21,7 @@ namespace Pagewise
 {
     static class Program
     {
-        public const string Version = "1.1.1";
+        public const string Version = "1.2.0";
 
         internal static string LocalDir;   // %LOCALAPPDATA%\Pagewise
         internal static string BuildDir;   // unpacked payload for this build

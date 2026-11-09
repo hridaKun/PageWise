@@ -37,6 +37,8 @@
       enableSplitMerge: true,
       enableMerge: true,
     },
+    // Linux: speech-dispatcher through the shell; Windows: none (Edge voices).
+    speech: shell?.speech,
     emptyHint: "Open a PDF with Ctrl+O, or drop one into the window.",
     openHint: "with Ctrl+O",
 

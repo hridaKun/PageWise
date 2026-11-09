@@ -24,7 +24,7 @@ namespace PagewiseSetup
 {
     static class Setup
     {
-        public const string Version = "1.1.1";
+        public const string Version = "1.2.0";
         public const string AppName = "Pagewise";
         public static string UiFont = "Segoe UI";
 

@@ -1,0 +1,11 @@
+# Pagewise (Electron/Chromium) needs unprivileged user namespaces for its
+# sandbox. Ubuntu 23.10+ only allows them for programs with a profile like
+# this one (the same as Ubuntu ships for Chrome, VS Code and others).
+abi <abi/4.0>,
+include <tunables/global>
+
+profile pagewise /opt/pagewise/pagewise flags=(unconfined) {
+  userns,
+
+  include if exists <local/pagewise>
+}

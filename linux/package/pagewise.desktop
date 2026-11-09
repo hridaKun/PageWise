@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Pagewise
+GenericName=PDF Reader
+Comment=Read, highlight, write, sign and organise your PDFs
+Exec=/usr/bin/pagewise %F
+Icon=pagewise
+Terminal=false
+Categories=Office;Viewer;
+MimeType=application/pdf;application/x-pdf;
+Keywords=pdf;reader;viewer;annotate;highlight;sign;
+StartupNotify=true
+StartupWMClass=Pagewise
+SingleMainWindow=true

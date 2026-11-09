@@ -1,0 +1,10 @@
+{
+  "name": "pagewise",
+  "productName": "Pagewise",
+  "desktopName": "pagewise.desktop",
+  "version": "0.0.0",
+  "description": "Read, highlight, write, sign and organise your PDFs.",
+  "main": "main.js",
+  "private": true,
+  "license": "UNLICENSED"
+}
