@@ -1,0 +1,484 @@
+/* Pagewise for Windows: window shell (tab strip, Home tab, dialogs). */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--m-bg);
+  color: var(--m-text);
+  font: 14px/1.4 var(--m-font);
+  user-select: none;
+}
+
+/* Touchscreen pinches never zoom the tab strip or Home tab (pinch zoom is
+   on for the reader tabs, where PDF.js turns it into a page zoom). */
+#tabStrip,
+#home,
+#dragOverlay,
+#dialogScrim,
+.mScrim,
+.mMenu {
+  touch-action: pan-x pan-y;
+}
+
+/* ---------- Tab strip ---------- */
+
+#tabStrip {
+  height: 44px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 0 8px;
+  background: var(--m-surface-2);
+
+  .spacer {
+    flex: 1;
+  }
+
+  .mIconButton {
+    width: 34px;
+    height: 34px;
+    margin-bottom: 5px;
+
+    .mIcon {
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      background: var(--m-press);
+    }
+  }
+}
+
+#docTabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab {
+  position: relative;
+  height: 36px;
+  min-width: 0;
+  width: 220px;
+  max-width: 240px;
+  flex: 0 1 220px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px 0 12px;
+  border: none;
+  border-radius: 10px 10px 0 0;
+  background: transparent;
+  color: var(--m-muted);
+  font: inherit;
+  cursor: default;
+
+  &:hover {
+    background: var(--m-press);
+  }
+
+  &.active {
+    background: var(--m-bg);
+    color: var(--m-text);
+  }
+
+  &.home {
+    width: auto;
+    flex: none;
+    padding: 0 14px;
+  }
+
+  .mIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .tabTitle {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: start;
+  }
+
+  .tabState {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    color: inherit;
+
+    &:hover {
+      background: var(--m-press);
+    }
+
+    /* Unsaved: a dot, which turns into × on hover. */
+    &.dirty::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--m-accent);
+    }
+
+    &.dirty .mIcon {
+      display: none;
+    }
+  }
+
+  &:hover .tabState.dirty::before {
+    display: none;
+  }
+
+  &:hover .tabState.dirty .mIcon {
+    display: block;
+  }
+
+  .tabState .mIcon {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* ---------- Views ---------- */
+
+#views {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.view {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  border: none;
+  width: 100%;
+  height: 100%;
+  background: var(--m-bg);
+
+  &.active {
+    visibility: visible;
+  }
+}
+
+/* ---------- Home ---------- */
+
+#home {
+  overflow-y: auto;
+  padding: 0 clamp(24px, 6vw, 72px) 40px;
+  user-select: text;
+}
+
+.hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: clamp(28px, 7vh, 72px) 0 24px;
+
+  h1 {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: var(--m-muted);
+    font-size: 15px;
+  }
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 23px;
+  background: var(--m-accent);
+  color: var(--m-on-accent);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(1.06);
+  }
+
+  .mIcon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.drop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  border: 1.5px dashed var(--m-line);
+  border-radius: var(--m-radius);
+  color: var(--m-muted);
+
+  .mIcon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 32px 0 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--m-muted);
+  }
+
+  input {
+    width: min(320px, 50%);
+    height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--m-line);
+    border-radius: 18px;
+    background: var(--m-surface);
+    color: var(--m-text);
+    font: inherit;
+    outline: none;
+
+    &:focus {
+      border-color: var(--m-accent);
+    }
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 24px 20px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  &:hover .cover {
+    box-shadow: 0 0 0 2px var(--m-accent);
+  }
+
+  &.missing {
+    opacity: 0.5;
+  }
+
+  .name {
+    padding: 0 2px;
+    font-weight: 600;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .meta {
+    padding: 0 2px;
+    margin-top: -4px;
+    color: var(--m-muted);
+    font-size: 12px;
+  }
+}
+
+.cover {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--m-radius-s);
+  overflow: hidden;
+  background: var(--m-surface);
+  border: 1px solid var(--m-line);
+  box-shadow: var(--m-shadow);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+  }
+
+  .initials {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--m-accent);
+    background: var(--m-accent-soft);
+  }
+
+  .progress {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgb(127 127 127 / 0.3);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--m-accent);
+    }
+  }
+}
+
+:root[data-theme="dark"] .cover img {
+  filter: var(--m-page-dark-filter);
+}
+
+.homeFoot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 48px;
+  color: var(--m-muted);
+  font-size: 12px;
+}
+
+.link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--m-accent);
+  font: inherit;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ---------- Drag and drop ---------- */
+
+#dragOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300000;
+  display: grid;
+  place-items: center;
+  background: rgb(255 138 31 / 0.12);
+  border: 3px dashed var(--m-accent);
+  pointer-events: none;
+
+  &[hidden] {
+    display: none;
+  }
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 24px;
+    border-radius: 18px;
+    background: var(--m-surface);
+    box-shadow: var(--m-shadow-raised);
+    font-size: 17px;
+    font-weight: 700;
+  }
+}
+
+/* ---------- Dialog ---------- */
+
+#dialogScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 300001;
+  display: grid;
+  place-items: center;
+  background: rgb(0 0 0 / 0.35);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.dialog {
+  width: min(440px, calc(100vw - 32px));
+  padding: 24px;
+  border-radius: 24px;
+  background: var(--m-surface);
+  box-shadow: var(--m-shadow-raised);
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+  }
+
+  p {
+    margin: 0 0 22px;
+    color: var(--m-muted);
+  }
+}
+
+.dialogButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+
+  button {
+    height: 38px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 19px;
+    background: var(--m-surface-2);
+    color: var(--m-text);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+
+    &.primary {
+      background: var(--m-accent);
+      color: var(--m-on-accent);
+    }
+
+    &:hover {
+      filter: brightness(1.05);
+    }
+  }
+}

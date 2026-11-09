@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://files.pagewise.example; frame-src 'self'; base-uri 'none'; form-action 'none';"
+    />
+    <title>Pagewise</title>
+    <link rel="stylesheet" href="/skin/tokens.css" />
+    <link rel="stylesheet" href="shell.css" />
+    <script src="shell.js" defer></script>
+  </head>
+  <body>
+    <div id="tabStrip" role="tablist" aria-label="Open documents">
+      <button class="tab home active" id="homeTab" type="button" role="tab" aria-selected="true" title="Home (Ctrl+H)">
+        <span class="mIcon mIcon-book"></span><span class="tabTitle">Home</span>
+      </button>
+      <div id="docTabs"></div>
+      <button class="mIconButton newTab" id="newTab" type="button" title="Open a PDF (Ctrl+O)" aria-label="Open a PDF"><span class="mIcon mIcon-plus"></span></button>
+      <span class="spacer"></span>
+      <button class="mIconButton" id="themeButton" type="button" title="Dark mode" aria-label="Dark mode"><span class="mIcon mIcon-moon"></span></button>
+    </div>
+
+    <div id="views">
+      <section id="home" class="view active" aria-label="Home">
+        <header class="hero">
+          <div>
+            <h1>Pagewise</h1>
+            <p>Read, highlight, write, sign and organise your PDFs.</p>
+          </div>
+          <button class="pill" id="openButton" type="button"><span class="mIcon mIcon-plus"></span>Open a PDF</button>
+        </header>
+
+        <div class="drop" id="dropHint">
+          <span class="mIcon mIcon-save"></span>
+          <span>Drop PDF files anywhere in this window to open them</span>
+        </div>
+
+        <section id="recentSection" hidden>
+          <div class="sectionHead">
+            <h2>Recent</h2>
+            <input id="recentSearch" type="search" placeholder="Search recent files" autocomplete="off" />
+          </div>
+          <div class="grid" id="recentGrid"></div>
+        </section>
+
+        <footer class="homeFoot">
+          <button class="link" id="associateButton" type="button">Show Pagewise in “Open with” for PDF files</button>
+          <span id="version"></span>
+        </footer>
+      </section>
+    </div>
+
+    <div id="dragOverlay" hidden><div><span class="mIcon mIcon-plus"></span>Drop to open</div></div>
+
+    <div class="mScrim" id="scrim" hidden></div>
+    <div class="mMenu" id="menu" hidden role="menu"></div>
+
+    <div id="dialogScrim" hidden>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+        <h2 id="dialogTitle"></h2>
+        <p id="dialogText"></p>
+        <div class="dialogButtons" id="dialogButtons"></div>
+      </div>
+    </div>
+  </body>
+</html>

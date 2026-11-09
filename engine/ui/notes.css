@@ -1,0 +1,251 @@
+/* Dark PDF Reader: notes toolbar and pen behaviour (see notes.js). */
+
+/* The Notes button replaces PDF.js's separate highlight and draw buttons. */
+#editorHighlight,
+#editorInk {
+  display: none !important;
+}
+
+#dprNotes::before {
+  -webkit-mask-image: url(icons/pen.svg);
+  mask-image: url(icons/pen.svg);
+}
+
+/* ---------- Floating toolbar ---------- */
+
+#dprNotesBar {
+  position: absolute;
+  z-index: 100002;
+  left: 50%;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  max-width: calc(100% - 24px);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--dpr-raised);
+  border: 1px solid var(--dpr-line);
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.28);
+  font: message-box;
+  color: var(--dpr-text);
+  touch-action: pan-x;
+  user-select: none;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.dprGroup,
+.dprSwatches,
+.dprSizes {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.dprSep {
+  width: 1px;
+  height: 26px;
+  margin: 0 4px;
+  background: var(--dpr-line);
+  flex: none;
+}
+
+.dprNoteBtn {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--dpr-text);
+  cursor: pointer;
+  flex: none;
+
+  &:hover {
+    background: var(--dpr-hover);
+  }
+
+  &.active {
+    background: var(--dpr-accent);
+    --icon-color: light-dark(#fff, #0b1220);
+  }
+}
+
+.dprIcon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  background-color: var(--icon-color, var(--dpr-text));
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.dprIcon-pen { --icon: url(icons/pen.svg); }
+.dprIcon-highlighter { --icon: url(icons/highlighter.svg); }
+.dprIcon-eraser { --icon: url(icons/eraser.svg); }
+.dprIcon-text { --icon: url(icons/text.svg); }
+.dprIcon-select { --icon: url(icons/select.svg); }
+.dprIcon-undo { --icon: url(icons/undo.svg); }
+.dprIcon-redo { --icon: url(icons/redo.svg); }
+.dprIcon-hand { --icon: url(icons/hand.svg); }
+.dprIcon-plus { --icon: url(icons/plus.svg); }
+.dprIcon-close { --icon: url(icons/close.svg); }
+
+/* "Pen only" off = fingers write too: show the hand crossed out. */
+.dprNoteBtn:not(.active) .dprIcon-hand {
+  opacity: 0.55;
+}
+
+.dprSwatch {
+  width: 30px;
+  height: 30px;
+  margin: 0 1px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background:
+    radial-gradient(circle, var(--swatch) 0 10px, transparent 11px);
+  cursor: pointer;
+  flex: none;
+
+  &.active {
+    border-color: var(--dpr-accent);
+  }
+
+  &:hover:not(.active) {
+    border-color: var(--dpr-line);
+  }
+}
+
+.dprSwatchCustom {
+  display: grid;
+  place-items: center;
+  background: conic-gradient(#f44, #fd4, #4d4, #4df, #44f, #d4f, #f44);
+  --icon-color: #fff;
+
+  .dprIcon {
+    width: 14px;
+    height: 14px;
+    filter: drop-shadow(0 0 1px rgb(0 0 0 / 0.6));
+  }
+}
+
+/* In dark mode pen and text colours are shown as they'll appear on the
+   darkened page (black ink shows up light). */
+:root.dpr-dark:is([data-dpr-tool="pen"], [data-dpr-tool="text"]) .dprSwatch:not(.dprSwatchCustom) {
+  filter: invert(0.88) hue-rotate(180deg);
+}
+
+.dprColorInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dprSize {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex: none;
+
+  &::after {
+    content: "";
+    width: var(--dot);
+    height: var(--dot);
+    border-radius: 50%;
+    background: var(--dpr-text);
+  }
+
+  &.active {
+    background: var(--dpr-active);
+  }
+}
+
+.dprNoteStatus {
+  font-size: 12px;
+  color: var(--dpr-muted);
+  white-space: nowrap;
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.2s, width 0.2s;
+  flex: none;
+
+  &.visible {
+    width: auto;
+    padding: 0 6px;
+    opacity: 1;
+  }
+}
+
+/* Eraser outline that follows the pen. */
+.dprEraserCursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100003;
+  border: 1.5px solid var(--dpr-accent);
+  border-radius: 50%;
+  background: rgb(122 167 255 / 0.15);
+  pointer-events: none;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+/* ---------- Pen behaviour on the page ---------- */
+
+:root.dpr-notes {
+  /* Contents-page links would get in the way of writing. */
+  .dprLinkLayer {
+    display: none;
+  }
+
+  /* Our own code scrolls with one finger and PDF.js pinch-zooms with two,
+     so the browser mustn't scroll or zoom by itself while writing. */
+  #viewerContainer {
+    touch-action: none;
+  }
+}
+
+/* With the pen, highlighter or eraser, strokes must start on top of older
+   strokes, so existing marks don't catch the pen. */
+:root.dpr-notes:is([data-dpr-tool="pen"], [data-dpr-tool="eraser"], [data-dpr-tool="highlighter"])
+  .annotationEditorLayer
+  :is(.inkEditor, .highlightEditor, .freeTextEditor, .stampEditor) {
+  pointer-events: none !important;
+}
+
+:root.dpr-notes[data-dpr-tool="eraser"] #viewerContainer {
+  cursor: cell;
+}
+
+/* Phones: the toolbar scrolls sideways. */
+@media (max-width: 560px) {
+  #dprNotesBar {
+    left: 12px;
+    right: 12px;
+    transform: none;
+    bottom: 12px;
+  }
+}

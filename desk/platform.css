@@ -1,0 +1,99 @@
+/* Pagewise for Windows: reader tabs. The Edge-style PDF.js toolbar from the
+   extension, in Pagewise's colours (orange accent, One UI greys/black). */
+
+@import url("/skin/tokens.css");
+
+:root {
+  --dpr-bg: var(--m-bg);
+  --dpr-surface: var(--m-surface-2);
+  --dpr-raised: var(--m-surface);
+  --dpr-text: var(--m-text);
+  --dpr-muted: var(--m-muted);
+  --dpr-line: var(--m-line);
+  --dpr-hover: var(--m-press);
+  --dpr-active: var(--m-accent-soft);
+  --dpr-accent: var(--m-accent);
+  --toolbar-height: 42px;
+  --toolbar-bg-color: var(--m-bg);
+  --body-bg-color: var(--m-surface-2);
+  --progressBar-color: var(--m-accent);
+}
+
+:root.dpr-dark {
+  --body-bg-color: #0b0b0c;
+}
+
+body {
+  font-family: var(--m-font);
+}
+
+#toolbarContainer {
+  border-bottom: 1px solid var(--m-line);
+}
+
+/* The tab strip already shows which file this is. */
+#dprDiscardNotes {
+  display: none !important;
+}
+
+.toolbarButton.toggled,
+#dprNotesBar .dprNoteBtn.active {
+  background: var(--m-accent-soft);
+  --icon-color: var(--m-accent);
+}
+
+.toolbarButton.toggled::before {
+  background-color: var(--m-accent);
+}
+
+#dprNotesBar {
+  border-radius: 22px;
+  background: var(--m-surface);
+  box-shadow: var(--m-shadow-raised);
+}
+
+#viewsManager {
+  --sidebar-bg-color: var(--m-surface);
+  --header-bg: var(--m-surface);
+  border-radius: 16px;
+}
+
+#outlinesView .treeItem.selected > a {
+  background: var(--m-accent-soft);
+  color: var(--m-accent);
+}
+
+/* (An absolute path: a url() inside a CSS variable is resolved relative to
+   the stylesheet that uses it, which would point into ui/.) */
+#dprSaveAs::before {
+  -webkit-mask-image: url(/pdfjs/web/images/toolbarButton-download.svg);
+  mask-image: url(/pdfjs/web/images/toolbarButton-download.svg);
+}
+
+/* Contents list: a little more air between entries. */
+#outlinesView .treeItem > a {
+  padding-block: 3px;
+  font-size: 13.5px;
+  line-height: 1.35;
+  border-radius: 8px;
+}
+
+/* "This PDF has an outline" hint on the sidebar button: Pagewise's orange. */
+.pdfSidebarNotification::after {
+  background-color: var(--m-accent);
+  width: 7px;
+  height: 7px;
+  top: 5px;
+  inset-inline-end: 5px;
+}
+
+/* Keep the pen tray centred on the pages, not over the open sidebar. */
+#outerContainer.viewsManagerOpen #dprNotesBar {
+  left: calc(50% + var(--viewsManager-width, 0px) / 2);
+  max-width: calc(100% - var(--viewsManager-width, 0px) - 24px);
+}
+
+.dprPrimary {
+  background-color: var(--m-accent);
+  color: var(--m-on-accent);
+}
